@@ -46,3 +46,13 @@ bash ../scripts/tf-plan.sh
 ```
 
 
+## Actual Plan
+
+This will be distributed as a Python package via Pypi.
+
+It will support reading a configuration file, and reading a Terraform plan in json format.
+
+The rules in the configuration file will be applied to the Terraform plan, and the status of the rules will be reported back to the user in a report output file.
+
+This is targeted at CICD pipelines, so should be added as a step after the creation of the Terraform plan. It will be useful to implement this to output a JUnit test report in XML format, as this can be easily read by Jenkins.
+

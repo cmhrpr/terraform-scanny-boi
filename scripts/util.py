@@ -18,6 +18,13 @@ attribute_names = {
     }
 }
 
+configuration = {
+    "regex": {
+        "logical": '^[a-zA-Z0-9_]+$',
+        "resource": '^[a-zA-Z0-9-]+$'
+    }
+}
+
 
 class TerraformError:
     """
@@ -41,7 +48,7 @@ def validate_logical_name(logical_name):
         Ensure the logical name of a Terraform resource is valid
     """ 
 
-    p = re.compile('^[a-zA-Z0-9_]+$')
+    p = re.compile(configuration['regex']['logical'])
     result = p.match(logical_name)
     
     if result is None:
@@ -74,7 +81,7 @@ def validate_resource_name(resource):
     if resource_name is None:
         return TerraformError(logical_name, "name_resource_set_none")
 
-    p = re.compile('^[a-zA-Z0-9-]+$')
+    p = re.compile(configuration['regex']['resource'])
     result = p.match(resource_name)
     
     if result is None:

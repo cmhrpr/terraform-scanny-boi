@@ -1,5 +1,12 @@
+locals {
+    lambda_name = "${var.project}-${var.environment}-dothething"
+    # Include the resource type that will use this role
+    iam_role_name = "${var.project}-${var.environment}-lambda-dothething"
+}
+
+
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+  name = "iam-for-lambda"
 
   assume_role_policy = <<EOF
 {
@@ -16,11 +23,10 @@ resource "aws_iam_role" "iam_for_lambda" {
   ]
 }
 EOF
+
+  tags = merge(local.tags, {Name=local.iam_role_name})
 }
 
-locals {
-    lambda_name = "${var.project}-${var.environment}-dothething"
-}
 
 
 
@@ -51,5 +57,5 @@ resource "aws_lambda_function" "test_lambda" {
     }
   }
 
-  tags = local.tags
+  tags = merge(local.tags, {Name=local.lambda_name})
 }
