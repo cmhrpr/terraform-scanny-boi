@@ -1,0 +1,4 @@
+export PLAN_B="plan.out"
+export PLAN_J="plan.json"
+
+export proj_env="tag-dev"

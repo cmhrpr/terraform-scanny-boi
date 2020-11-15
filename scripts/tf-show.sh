@@ -1,0 +1,1 @@
+terraform show -json $PLAN_B > $PLAN_J

@@ -1,0 +1,1 @@
+terraform plan -var-file=../envs/${proj_env}.tfvars  -out=$PLAN_B
