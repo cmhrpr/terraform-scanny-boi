@@ -1,4 +1,5 @@
 import os
+import sys
 
 import json 
 
@@ -7,7 +8,7 @@ from util import TerraformError, validate_logical_name, validate_resource_name, 
 
 
 # Import settings
-plan_json_name = os.environ["PLAN_J"]
+plan_json_name = sys.argv[1]
 
 
 # Set defaults

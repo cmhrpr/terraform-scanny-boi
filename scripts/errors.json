@@ -1,0 +1,9 @@
+{
+    "tags_not_found": "The tag attribute was not present",
+    "tags_set_none": "The tag attribute was found, but set to None",
+    "tags_missing": "A required tag is missing. Please see error.info",
+    "invalid_name_logical": "The logical name is invalid",
+    "name_resource_invalid": "The resource name is invalid",
+    "name_resource_set_none": "The name attribute was found, but set to None",
+    "name_resource_not_found": "The name attribute was not present"
+}

@@ -1,4 +1,5 @@
 import re 
+import json
 
 valid_errors = {
     "tags_not_found": "The tag attribute was not present",
@@ -10,19 +11,31 @@ valid_errors = {
     "name_resource_not_found": "The name attribute was not present",
 }
 
+def load_json_from_file(fname):
+    data = None
+    with open(fname, "r") as f:
+        data = json.load(f)
+    return data
+
+valid_errors = load_json_from_file("./errors.json")
+attribute_names = load_json_from_file("attribute_names.json")
+configuration = load_json_from_file("config.json")
 
 
-attribute_names = {
-    "aws_lambda_function": {
-        "name": "function_name"
-    }
-}
+conf = {
+    "name_logical": {
+        "type": "regex",
+        "rule": configuration['regex']['logical'],
+        "namespace": "root",
+        "name": "name"
+    },
+    "name_resource": {
+        "type": "regex",
+        "rule": configuration['regex']['resource'],
+        "namespace": "values",
+        "alt_names": [attribute_names["values"]]
+    },
 
-configuration = {
-    "regex": {
-        "logical": '^[a-zA-Z0-9_]+$',
-        "resource": '^[a-zA-Z0-9-]+$'
-    }
 }
 
 
@@ -40,6 +53,34 @@ class TerraformError:
 
     def __str__(self):
         return f"{self.logical_name}: {self.error} - {self.info}"
+
+def validate_resource(resource): 
+    # Return True if no errors
+    #       else return a list of TerraformErrors
+
+    errors = []
+    logical_name = resource.name
+
+    for rule in conf:
+        ns = None
+
+        if rule['namespace'] == 'root':
+            ns = resource
+
+            name = rule['name']
+
+            if rule['type'] == 'regex':
+
+                p = re.compile(rule['rule'])
+                result = p.match(resource[name])
+
+                if not result:
+                    errors.append(TerraformError(logical_name, f"{rule['type']}_{rule['namespace']}_{rule['name']}"))
+
+
+
+        elif rule['namespace'] == 'values':
+            ns = resource.values
 
 
 

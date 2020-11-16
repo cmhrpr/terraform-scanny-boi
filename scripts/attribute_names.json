@@ -1,0 +1,8 @@
+{
+    "values": {
+        "aws_lambda_function": {
+            "name": "name",
+            "value": "function_name"
+        }
+    }
+}
