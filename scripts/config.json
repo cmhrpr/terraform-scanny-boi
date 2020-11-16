@@ -1,6 +1,22 @@
-{
-    "regex": {
-        "logical": "^[a-zA-Z0-9_]+$",
-        "resource": "^[a-zA-Z0-9-]+$"
+{"rules": {"name_logical": {
+    "type": "regex",
+    "rule": "^[a-zA-Z0-9_]+$",
+    "namespace": "root",
+    "name": "name"
+},
+"name_resource": {
+    "type": "regex",
+    "rule": "^[a-zA-Z0-9-]+$",
+    "namespace": "values",
+    "name": "name"
+},
+ "tag_set": {
+    "type": "keys_present",
+    "rule": ["Name", "vol"],
+    "namespace": "values",
+    "name": "tags"
     }
-}
+},
+"alt_names": { "aws_lambda_function": {
+    "name": "function_name"
+}}}

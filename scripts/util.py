@@ -19,24 +19,9 @@ def load_json_from_file(fname):
 
 valid_errors = load_json_from_file("./errors.json")
 attribute_names = load_json_from_file("attribute_names.json")
-configuration = load_json_from_file("config.json")
 
-
-conf = {
-    "name_logical": {
-        "type": "regex",
-        "rule": configuration['regex']['logical'],
-        "namespace": "root",
-        "name": "name"
-    },
-    "name_resource": {
-        "type": "regex",
-        "rule": configuration['regex']['resource'],
-        "namespace": "values",
-        "alt_names": [attribute_names["values"]]
-    },
-
-}
+settings = load_json_from_file("config.json")
+conf = settings["rules"]
 
 
 class TerraformError:
@@ -44,8 +29,8 @@ class TerraformError:
         Represents an error found while validating a Terraform plan.
     """
     def __init__(self, logical_name, error, info=None):
-        if error not in valid_errors:
-            exit(f"INVALID ERROR {error} MUST BE IN {valid_errors.keys()}")
+        # if error not in valid_errors:
+        #     exit(f"INVALID ERROR {error} MUST BE IN {valid_errors.keys()}")
 
         self.logical_name = logical_name 
         self.error = error
@@ -59,10 +44,13 @@ def validate_resource(resource):
     #       else return a list of TerraformErrors
 
     errors = []
-    logical_name = resource.name
+    logical_name = resource['name']
+    resource_type = resource['type']
 
-    for rule in conf:
+    for rule_ in conf:
         ns = None
+
+        rule = conf[rule_]
 
         if rule['namespace'] == 'root':
             ns = resource
@@ -72,7 +60,7 @@ def validate_resource(resource):
             if rule['type'] == 'regex':
 
                 p = re.compile(rule['rule'])
-                result = p.match(resource[name])
+                result = p.match(ns[name])
 
                 if not result:
                     errors.append(TerraformError(logical_name, f"{rule['type']}_{rule['namespace']}_{rule['name']}"))
@@ -80,7 +68,38 @@ def validate_resource(resource):
 
 
         elif rule['namespace'] == 'values':
-            ns = resource.values
+            ns = resource['values']
+
+            name = rule['name']
+
+
+
+            if rule['type'] == 'regex':
+
+                p = re.compile(rule['rule'])
+    
+
+                if resource_type in settings['alt_names']:
+                    name = settings['alt_names'][resource_type][name]
+
+                result = p.match(ns[name])
+
+                if not result:
+                    errors.append(TerraformError(logical_name, f"{rule['type']}_{rule['namespace']}_{rule['name']}"))
+
+            elif rule['type'] == "keys_present":
+                keys = ns[rule['name']]
+
+                key_set = set(keys)
+
+                key_set_required = set(rule['rule'])
+
+                dff = key_set_required - key_set
+
+                if len(dff) > 0:
+                    errors.append(TerraformError(logical_name, f"{rule['type']}_{rule['namespace']}_{rule['name']}", dff))
+
+    return errors
 
 
 
